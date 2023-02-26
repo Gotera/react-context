@@ -1,8 +1,9 @@
 import { Container } from './styles';
-import { memo } from 'react';
+import { memo, useContext } from 'react';
 import { IconButton } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
+import { MarketcarContext } from 'common/context/Car';
 
 
 function Produto({
@@ -12,6 +13,7 @@ function Produto({
   valor,
   unidade
 }) {
+  const { car, setCar } = useContext(MarketcarContext)
   return (
       <Container>
         <div>
