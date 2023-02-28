@@ -1,4 +1,4 @@
-import { MarketcarProvider } from "common/context/Car";
+import { MarketCarProvider } from "common/context/Car";
 import { UserProvider } from "common/context/User";
 import Carrinho from "pages/Carrinho";
 import Feira from "pages/Feira";
@@ -13,11 +13,11 @@ function Router() {
 					<Route exact path="/">
 						<Login />
 					</Route>
-					<MarketcarProvider>
+					<MarketCarProvider>
 						<Route path="/feira">
 							<Feira />
 						</Route>
-					</MarketcarProvider>
+					</MarketCarProvider>
 				</UserProvider>
 				<Route path="/carrinho">
 					<Carrinho />

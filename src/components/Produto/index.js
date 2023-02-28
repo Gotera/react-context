@@ -1,9 +1,9 @@
 import { Container } from './styles';
-import { memo, useContext } from 'react';
+import { memo } from 'react';
 import { IconButton } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
-import { MarketcarContext } from 'common/context/Car';
+import { useMarketCarContext } from 'common/context/Car';
 
 
 function Produto({
@@ -13,21 +13,8 @@ function Produto({
   price,
   unit
 }) {
-  const { car, setCar } = useContext(MarketcarContext)
-  function addProduct(newProduct) {
-    const hasTheProduct = car.some(itemInCar => itemInCar.id === newProduct.id)
-    if (!hasTheProduct) {
-      newProduct.quantity = 1;
-      return (
-        setCar(previousCar =>
-          [...previousCar, newProduct])
-      );
-    }
-    setCar(previousCar => previousCar.map(itemInCar => {
-      if(itemInCar.id === newProduct.id) itemInCar.quantity += 1;
-      return itemInCar;
-    }))
-  }
+  const { car, addProduct, removeItem } = useMarketCarContext();
+  const qtProductInCar = car.find(itemInCar => itemInCar.id === id)
   return (
     <Container>
       <div>
@@ -42,10 +29,14 @@ function Produto({
       <div>
         <IconButton
           color="secondary"
+          onClick={() => removeItem(id)}
         >
           <RemoveIcon />
         </IconButton>
-        <IconButton onClick={() => addProduct({ name, photo, id, price })}>
+        {qtProductInCar?.quantity || 0}
+        <IconButton
+          color="primary"
+          onClick={() => addProduct({ name, photo, id, price })}>
           <AddIcon />
         </IconButton>
       </div>
