@@ -1,19 +1,34 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 export const MarketCarContext = createContext();
 MarketCarContext.displayName = "Marketcar"
 
 export const MarketCarProvider = ({ children }) => {
 	const [car, setCar] = useState([])
+	const [qtProducts, setQtProducts] = useState(0);
 	return (
-		<MarketCarContext.Provider value={{ car, setCar }}>
+		<MarketCarContext.Provider
+			value={
+				{
+					car,
+					setCar,
+					qtProducts,
+					setQtProducts
+				}
+			}>
 			{children}
 		</MarketCarContext.Provider>
 	)
 }
 
 export const useMarketCarContext = () => {
-	const { car, setCar } = useContext(MarketCarContext);
+	const
+		{
+			car,
+			setCar,
+			qtProducts,
+			setQtProducts
+		} = useContext(MarketCarContext);
 
 	function changeQuantity(id, quantity) {
 		return car.map(itemInCar => {
@@ -43,10 +58,17 @@ export const useMarketCarContext = () => {
 		setCar(changeQuantity(id, -1))
 	};
 
+	useEffect(() => {
+		const qtProductsInArray = car.reduce((counter, product) => counter + product.quantity, 0)
+		setQtProducts(qtProductsInArray);
+	}, [car, setQtProducts]);
+
 	return {
 		car,
 		setCar,
 		addProduct,
-		removeItem
+		removeItem,
+		qtProducts,
+		setQtProducts
 	}
 };

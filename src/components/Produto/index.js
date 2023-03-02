@@ -30,6 +30,7 @@ function Produto({
         <IconButton
           color="secondary"
           onClick={() => removeItem(id)}
+          disabled={!qtProductInCar}
         >
           <RemoveIcon />
         </IconButton>

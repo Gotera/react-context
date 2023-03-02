@@ -48,6 +48,7 @@ function Login() {
         />
       </InputContainer>
       <Button
+        disabled={name.length < 2}
         variant="contained"
         color="primary"
         onClick={() => { history.push('/feira') }}
