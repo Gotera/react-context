@@ -1,21 +1,27 @@
 import { Button, Snackbar, InputLabel, Select, MenuItem } from '@material-ui/core';
 import MuiAlert from '@material-ui/lab/Alert';
 import { useMarketCarContext } from 'common/context/Car';
-import { PaymentContext } from 'common/context/Payment';
+import { usePaymentContext } from 'common/context/Payment';
+import { UserContext } from 'common/context/User';
 import Produto from 'components/Produto';
-import { useContext, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Container, Voltar, TotalContainer, PagamentoContainer } from './styles';
 
 function Carrinho() {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const history = useHistory();
-  const { car } = useMarketCarContext();
-  const { typesOfPayment, paymentMethod, setPaymentMethod } = useContext(PaymentContext)
+  const { car, currentCarPrice, buy } = useMarketCarContext();
+  const { balance = 0 } = useContext(UserContext);
+  const total = useMemo(() => balance - currentCarPrice, [balance, currentCarPrice]);
+  const {
+    typesOfPayment,
+    paymentMethod,
+    changePaymentMethod,
+  } = usePaymentContext();
   return (
     <Container>
       <Voltar onClick={() => history.goBack()} />
-      {paymentMethod.name}
       <h2>
         Carrinho
       </h2>
@@ -29,7 +35,7 @@ function Carrinho() {
         <InputLabel> Forma de Pagamento </InputLabel>
         <Select
           value={paymentMethod.id}
-          onChange={(event) => setPaymentMethod(event.target.value)}
+          onChange={(event) => changePaymentMethod(event.target.value)}
         >
           {typesOfPayment.map(payment => (
             <MenuItem value={payment.id} key={payment.id}>
@@ -41,21 +47,23 @@ function Carrinho() {
       <TotalContainer>
         <div>
           <h2>Total no Carrinho: </h2>
-          <span>R$ </span>
+          <span>R$ {currentCarPrice.toFixed(2)}</span>
         </div>
         <div>
           <h2> Saldo: </h2>
-          <span> R$ </span>
+          <span> R$ {Number(balance).toFixed(2)}</span>
         </div>
         <div>
           <h2> Saldo Total: </h2>
-          <span> R$ </span>
+          <span> R$ {total.toFixed(2)}</span>
         </div>
       </TotalContainer>
       <Button
         onClick={() => {
+          buy();
           setOpenSnackbar(true);
         }}
+        disabled={total < 0 || car.length === 0}
         color="primary"
         variant="contained"
       >

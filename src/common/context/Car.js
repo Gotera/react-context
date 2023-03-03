@@ -1,4 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { usePaymentContext } from "./Payment";
+import { UserContext } from "./User";
 
 export const MarketCarContext = createContext();
 MarketCarContext.displayName = "Marketcar"
@@ -6,6 +8,7 @@ MarketCarContext.displayName = "Marketcar"
 export const MarketCarProvider = ({ children }) => {
 	const [car, setCar] = useState([])
 	const [qtProducts, setQtProducts] = useState(0);
+	const [currentCarPrice, setCurrentCarPrice] = useState(0);
 	return (
 		<MarketCarContext.Provider
 			value={
@@ -13,7 +16,9 @@ export const MarketCarProvider = ({ children }) => {
 					car,
 					setCar,
 					qtProducts,
-					setQtProducts
+					setQtProducts,
+					currentCarPrice,
+					setCurrentCarPrice
 				}
 			}>
 			{children}
@@ -27,8 +32,13 @@ export const useMarketCarContext = () => {
 			car,
 			setCar,
 			qtProducts,
-			setQtProducts
+			setQtProducts,
+			currentCarPrice,
+			setCurrentCarPrice
 		} = useContext(MarketCarContext);
+
+	const { paymentMethod } = usePaymentContext();
+	const { setBalance } = useContext(UserContext)
 
 	function changeQuantity(id, quantity) {
 		return car.map(itemInCar => {
@@ -58,10 +68,22 @@ export const useMarketCarContext = () => {
 		setCar(changeQuantity(id, -1))
 	};
 
+	function buy() {
+		setCar([]);
+		setBalance(balance => balance - currentCarPrice)
+	}
+
 	useEffect(() => {
-		const qtProductsInArray = car.reduce((counter, product) => counter + product.quantity, 0)
+		const { currentPrice, qtProductsInArray } = car.reduce((counter, product) => ({
+			qtProductsInArray: counter.qtProductsInArray + product.quantity,
+			currentPrice: counter.currentPrice + (product.price * product.quantity)
+		}), {
+			qtProductsInArray: 0,
+			currentPrice: 0
+		})
 		setQtProducts(qtProductsInArray);
-	}, [car, setQtProducts]);
+		setCurrentCarPrice(currentPrice * paymentMethod.interest);
+	}, [car, setQtProducts, setCurrentCarPrice, paymentMethod]);
 
 	return {
 		car,
@@ -69,6 +91,8 @@ export const useMarketCarContext = () => {
 		addProduct,
 		removeItem,
 		qtProducts,
-		setQtProducts
+		setQtProducts,
+		currentCarPrice,
+		buy
 	}
 };

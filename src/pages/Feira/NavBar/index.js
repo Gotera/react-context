@@ -11,7 +11,7 @@ export default function NavBar() {
   const history = useHistory();
   return (
     <Nav>
-      <Logo />
+      <Logo width="85px" />
       <IconButton
         disabled={qtProducts === 0}
         onClick={() => history.push('/carrinho')}
